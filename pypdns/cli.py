@@ -5,7 +5,8 @@ Usage:
     pypdns zones list [-c <cfg_pth>] [--log <log_level>] [--name <name>]
     pypdns zones get <zone_name> [--log <log_level>] [-c <cfg_pth>] [--name <name>] [--type <type>]
     pypdns zones create <zone_name> [-c <cfg_pth>] [--log <log_level>] [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa_edit <soa_edit>]
-    pypdns record add <zone_name> <record_name> <content> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--no-ptr] [--disabled]
+    pypdns record add <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--no-ptr] [--disabled]
+    pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>]
     pypdns (-h | --help)
     pypdns --version
 
@@ -27,6 +28,9 @@ Options:
     --changetype <changetype>        Record update behaviour [default: REPLACE]
     --disabled                       Disable record
     --ttl <ttl>                      Record's ttl [default: 3600]
+    --otype <object_type>            Filter search result, one of : record or zone [default: record]
+    --zone <zone>                    Filter search result on zone name (sets object_type to record)
+    --max-results <max_results>      Limit search results
 """
 import logging
 
@@ -82,8 +86,15 @@ def main():
             pprint(pdns_api.record_add(options['<zone_name>'],
                                        options['<record_name>'],
                                        options['<content>'],
+                                       options['<comment>'],
                                        type_=options['--rtype'],
                                        changetype=options['--changetype'],
                                        ttl=int(options['--ttl']),
                                        no_ptr=options['--no-ptr'],
                                        disabled=options['--disabled']))
+    if options['search']:
+        pprint(pdns_api.search(options['<term>'],
+                               object_type=options['--otype'],
+                               zone=options['--zone'],
+                               rtype=options['--rtype'],
+                               max_results=options['--max-results']))

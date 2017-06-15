@@ -57,6 +57,7 @@ class PyPDNS(object):
 
         self.config = parse_config(cfg, ext_config)
         self.zones_api = api.ZonesAPI(self.config)
+        self.search_api = api.SearchAPI(self.config)
 
     def zones_list(self, name='.*'):
         """
@@ -136,7 +137,7 @@ class PyPDNS(object):
         ret, code = self.zones_api.create_zone(data)
         return ret
 
-    def record_add(self, zone_name, record_name, content, type_='A',
+    def record_add(self, zone_name, record_name, content, comment, type_='A',
                    changetype='REPLACE', ttl=3600, no_ptr=False, disabled=False):
         """
         Add or replace a record
@@ -159,7 +160,7 @@ class PyPDNS(object):
         :type disabled: bool
         """
         record_name = (record_name if record_name.endswith('.')
-                        else record_name + '.')
+                       else record_name + '.')
         name = record_name + zone_name
         if not name.endswith('.'):
             name += '.'
@@ -174,9 +175,45 @@ class PyPDNS(object):
                      {'content': content,
                       'set-ptr': not no_ptr,
                       'disabled': disabled
-                    }
-                 ]}
+                      },
+                  ],
+                 'comments': [{'account': os.environ['USER'],
+                               'content': comment,
+                               }
+                              ]
+                 }
             ]
         }
         ret, code = self.zones_api.update_records(zone_name, data)
         return ret
+
+    def search(self, term, object_type=None, zone=None, rtype=None,
+               max_results=None):
+        """
+        Search for data in zone & record
+
+        :param term: term to search, use * for wildcard char and ? for a single wildcard char
+        :type term: String
+        :param object_type: filter results, zone or record
+        :type object_type: String
+        :param zone: filter results record on a specific zone (sets object_type = record)
+        :type zone: String
+        :param rtype: filter on the given record's type (implies object_type = record)
+        :param max_results: Limit number of results, default to None
+        :rtype max_results: int
+        """
+        results, _ = self.search_api.search(term, max_results)
+        object_type = 'record' if zone or rtype else object_type
+        if not object_type:
+            return results
+
+        filtered = [rec for rec in results if rec['object_type'] == object_type]
+
+        if zone:
+            zone = zone + '.' if not zone.endswith('.') else zone
+            filtered = [rec for rec in filtered if rec.get('zone') == zone]
+
+        if rtype:
+            filtered = [rec for rec in filtered if rec.get('type') == rtype]
+
+        return filtered
