@@ -6,7 +6,7 @@ config = {
     'author': 'Ismael Tifous',
     'url': 'http://github.com/fousti/pypdns',
     'author_email': 'ismael.tifous@gmail.com',
-    'version': '0.2',
+    'version': '0.3',
     'install_requires': ['docopt',
                          'requests'],
     'extras_require': {
