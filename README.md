@@ -28,4 +28,10 @@ Get zone info :
 ```pypdns get zones example.com```
 
 Add an A record to a zone
-```pypdns record add example.com test 10.190.32.32 --rtype A```
+```pypdns record add example.com test 10.190.32.32 'mandatory comment' --rtype A```
+
+Search an object in DNS ( zone or record), use * for wildcard char and ? for a single wildcard char.
+
+```pypdns search example* --rtype A``` (search for a A record matching example*)
+
+```pypdns search exa* --otype zone``` ( search for a zone matching exa*)
