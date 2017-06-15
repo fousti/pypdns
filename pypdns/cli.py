@@ -5,8 +5,8 @@ Usage:
     pypdns zones list [-c <cfg_pth>] [--log <log_level>] [--name <name>]
     pypdns zones get <zone_name> [--log <log_level>] [-c <cfg_pth>] [--name <name>] [--type <type>]
     pypdns zones create <zone_name> [-c <cfg_pth>] [--log <log_level>] [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa_edit <soa_edit>]
-    pypdns record add <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--no-ptr] [--disabled]
-    pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>]
+    pypdns record add <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--no-ptr] [--disabled] [-c <cfg_pth>] [--log <log_level>]
+    pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>] [-c <cfg_pth>] [--log <log_level>]
     pypdns (-h | --help)
     pypdns --version
 
