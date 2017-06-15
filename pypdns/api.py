@@ -40,12 +40,12 @@ class PdnsAPI(object):
                              'call')
         return url
 
-    def _call(self, verb, url, data={}, headers={}):
+    def _call(self, verb, url, data={}, params={}, headers={}):
         if headers:
             self.session.headers.update(headers)
 
         log.info('Call %s with data %s', url, data)
-        resp = self.session.request(verb, url, json=data)
+        resp = self.session.request(verb, url, json=data, params=params)
         status_code = resp.status_code
         try:
             resp.raise_for_status()
@@ -63,13 +63,13 @@ class PdnsAPI(object):
         else:
             return resp, status_code
 
-    def collection_get(self):
+    def collection_get(self, params={}):
         url = self.endpoint + self.collection_url
-        return self._call('GET', url)
+        return self._call('GET', url, params=params)
 
-    def get(self, url=None, _id=None):
+    def get(self, url=None, _id=None, params={}):
         url = self.build_url(_id, url)
-        return self._call('GET', url)
+        return self._call('GET', url, params=params)
 
     def collection_post(self, data):
         url = self.endpoint + self.collection_url
@@ -95,3 +95,14 @@ class ZonesAPI(PdnsAPI):
 
     def update_records(self, zone_name, data):
         return self._process_resp(*self.patch(data, _id=zone_name))
+
+
+class SearchAPI(PdnsAPI):
+    collection_url = '/search-data'
+    url = ''
+
+    def search(self, term, max_results=None):
+        params = {'q': term}
+        if max_results:
+            params['max'] = max_results
+        return self._process_resp(*self.collection_get(params=params))
