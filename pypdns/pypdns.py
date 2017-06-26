@@ -202,9 +202,9 @@ class PyPDNS(object):
         :param max_results: Limit number of results, default to None
         :rtype max_results: int
         """
-        results, _ = self.search_api.search(term, max_results)
+        results, sts_code = self.search_api.search(term, max_results)
         object_type = 'record' if zone or rtype else object_type
-        if not object_type:
+        if not object_type or sts_code != 200:
             return results
 
         filtered = [rec for rec in results if rec['object_type'] == object_type]
