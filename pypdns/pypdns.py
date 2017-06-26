@@ -1,6 +1,7 @@
 import os
 import re
 import logging
+import datetime
 
 import ConfigParser
 
@@ -104,6 +105,11 @@ class PyPDNS(object):
             match = True
             for key, pattern in patterns.iteritems():
                 match &= bool(pattern.match(record_set[key]))
+
+            for comment in record_set.get('comments', []):
+                if comment['modified_at']:
+                    comment['modified_at'] = datetime.datetime.fromtimestamp(
+                        comment['modified_at']).isoformat()
             if match:
                 result.append(record_set)
 
@@ -179,12 +185,15 @@ class PyPDNS(object):
                   ],
                  'comments': [{'account': os.environ['USER'],
                                'content': comment,
+                               'modified_at': datetime.datetime.now().isoformat()
                                }
                               ]
                  }
             ]
         }
         ret, code = self.zones_api.update_records(zone_name, data)
+        if code == 204:
+            ret = 'Record created'
         return ret
 
     def search(self, term, object_type=None, zone=None, rtype=None,
@@ -202,9 +211,9 @@ class PyPDNS(object):
         :param max_results: Limit number of results, default to None
         :rtype max_results: int
         """
-        results, _ = self.search_api.search(term, max_results)
+        results, sts_code = self.search_api.search(term, max_results)
         object_type = 'record' if zone or rtype else object_type
-        if not object_type:
+        if not object_type or sts_code != 200:
             return results
 
         filtered = [rec for rec in results if rec['object_type'] == object_type]

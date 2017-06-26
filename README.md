@@ -30,6 +30,10 @@ Get zone info :
 Add an A record to a zone
 ```pypdns record add example.com test 10.190.32.32 'mandatory comment' --rtype A```
 
+Disable an A record
+
+```pypdns record add example.com test 10.190.32.32 'mandatory comment' --rtype A --disabled```
+
 Search an object in DNS ( zone or record), use * for wildcard char and ? for a single wildcard char.
 
 ```pypdns search example* --rtype A``` (search for a A record matching example*)
