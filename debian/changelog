@@ -1,3 +1,9 @@
+pypdns (0.4-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- Ismael Tifous <ismael.tifous@dailymotion.com>  Mon, 26 Jun 2017 15:21:08 +0200
+
 pypdns (0.1-1) unstable; urgency=low
 
   * Initial package definition
