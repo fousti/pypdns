@@ -143,7 +143,7 @@ class PyPDNS(object):
         ret, code = self.zones_api.create_zone(data)
         return ret
 
-    def record_add(self, zone_name, record_name, content, comment, type_='A',
+    def record_add(self, zone_name, record_name, contents, comment, type_='A',
                    changetype='REPLACE', ttl=3600, no_ptr=False, disabled=False):
         """
         Add or replace a record
@@ -167,9 +167,21 @@ class PyPDNS(object):
         """
         record_name = (record_name if record_name.endswith('.')
                        else record_name + '.')
-        name = record_name + zone_name
+
+        name = record_name + zone_name if type_ in ('A', 'AAAA') else zone_name
+
         if not name.endswith('.'):
             name += '.'
+
+        records = []
+
+        for content in contents.split(','):
+            record = {
+                'content': content,
+                'set-ptr': not no_ptr,
+                'disabled': disabled
+            }
+            records.append(record)
 
         data = {
             'rrsets': [
@@ -177,15 +189,9 @@ class PyPDNS(object):
                  'type': type_,
                  'ttl': ttl,
                  'changetype': changetype,
-                 'records': [
-                     {'content': content,
-                      'set-ptr': not no_ptr,
-                      'disabled': disabled
-                      },
-                  ],
+                 'records': records,
                  'comments': [{'account': os.environ['USER'],
                                'content': comment,
-                               'modified_at': datetime.datetime.now().isoformat()
                                }
                               ]
                  }
