@@ -4,7 +4,7 @@ pypdns
 Usage:
     pypdns zones list [-c <cfg_pth>] [--log <log_level>] [--name <name>]
     pypdns zones get <zone_name> [--log <log_level>] [-c <cfg_pth>] [--name <name>] [--type <type>]
-    pypdns zones create <zone_name> [-c <cfg_pth>] [--log <log_level>] [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa_edit <soa_edit>]
+    pypdns zones create <zone_name> [-c <cfg_pth>] [--log <log_level>] [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa-edit <soa_edit>] [--soa-ttl <soa_ttl>]
     pypdns record add <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--no-ptr] [--disabled] [-c <cfg_pth>] [--log <log_level>]
     pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>] [-c <cfg_pth>] [--log <log_level>]
     pypdns (-h | --help)
@@ -20,6 +20,7 @@ Options:
     --name <name>                    Filter results on name for a given zone, regex format [default: .*]
     --type <type>                    Filter results on type for a given zone, regex format [default: .*]
     --soa <soa>                      SOA valid string, override default_soa in config file
+    --soa-ttl <soa_ttl>              SOA ttl, [default: 7200]
     --kind <kind>                    Zone type, [default: NATIVE]
     --nameservers=<nameservers>      List of namservers for zone, override value from config file
     --soa_edit <soa_edit>            Soa edit behaviour for the zone, [default: DEFAULT]
@@ -79,7 +80,8 @@ def main():
                                          kind=options['--kind'],
                                          soa=options['--soa'],
                                          nameservers=nameservers,
-                                         soa_edit=options['--soa_edit']))
+                                         soa_edit=options['--soa-edit'],
+                                         soa_ttl=options['--soa-ttl']))
 
     if options['record']:
         if options['add']:

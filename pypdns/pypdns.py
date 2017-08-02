@@ -116,7 +116,7 @@ class PyPDNS(object):
         return result
 
     def zones_create(self, name, kind='NATIVE', soa=None, nameservers=[],
-                     soa_edit='DEFAULT'):
+                     soa_edit='INCEPTION-INCREMENT', soa_ttl=7200):
         """
         Creates a Zone
 
@@ -138,7 +138,13 @@ class PyPDNS(object):
             'name': name,
             'kind': kind,
             'nameservers': nameservers,
-            'soa_edit': soa_edit,
+            'soa_edit_api': soa_edit,
+            'rrsets': [
+                {'name': name,
+                 'type': 'SOA',
+                 'ttl': soa_ttl,
+                 'records': [{'content': soa, 'disabled': False}]}
+            ]
         }
         ret, code = self.zones_api.create_zone(data)
         return ret
