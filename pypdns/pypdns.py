@@ -150,7 +150,7 @@ class PyPDNS(object):
         return ret
 
     def record_add(self, zone_name, record_name, contents, comment, type_='A',
-                   changetype='REPLACE', ttl=3600, no_ptr=False, disabled=False):
+                   changetype='REPLACE', ttl=3600, reverse=False, disabled=False):
         """
         Add or replace a record
 
@@ -166,15 +166,33 @@ class PyPDNS(object):
         :type changetype: String
         :param ttl: record's type, default to A
         :type ttl: int
-        :param no_ptr: For A or AAAA record, default is to automatically add reverse, set this to True if not wanted
-        :type no_ptr: bool
+        :param reverse: For A or AAAA record, default is to automatically add reverse, set this to True if not wanted
+        :type reverse: bool
         :param disabled: Disable record, default to False
         :type disabled: bool
         """
         record_name = (record_name if record_name.endswith('.')
                        else record_name + '.')
 
-        name = record_name + zone_name if type_ in ('A', 'AAAA') else zone_name
+        name = (record_name + zone_name if type_ in ('A', 'AAAA', 'PTR')
+                else zone_name)
+
+        # record already exists ?
+        old_record = self.zones_get(zone_name, name=name)
+
+        if old_record:
+            valid = False
+            while not valid:
+                replace = raw_input('Warning, the record already exists with the '
+                                    'following data %s, replace it ? Y/n :' % old_record)
+                if replace.lower() not in ('y','n','yes','no'):
+                    continue
+                if replace.lower() in ('n', 'no'):
+                    log.info('Exiting with no changes on existing record')
+                    return
+                else:
+                    valid = True
+                    reverse = True
 
         if not name.endswith('.'):
             name += '.'
@@ -183,8 +201,8 @@ class PyPDNS(object):
 
         for content in contents.split(','):
             record = {
-                'content': content,
-                'set-ptr': not no_ptr,
+                'content':  content,
+                'set-ptr':  reverse,
                 'disabled': disabled
             }
             records.append(record)
