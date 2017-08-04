@@ -1,13 +1,12 @@
 from setuptools import setup
 
-from pypdns import __version__
 
 config = {
     'description': 'PowerDNS API python wrapper, library & cli',
     'author': 'Ismael Tifous',
     'url': 'http://github.com/fousti/pypdns',
     'author_email': 'ismael.tifous@gmail.com',
-    'version': __version__,
+    'version': '0.8',
     'install_requires': ['docopt',
                          'requests'],
     'extras_require': {
