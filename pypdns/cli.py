@@ -5,7 +5,7 @@ Usage:
     pypdns zones list [-c <cfg_pth>] [--log <log_level>] [--name <name>]
     pypdns zones get <zone_name> [--log <log_level>] [-c <cfg_pth>] [--name <name>] [--type <type>]
     pypdns zones create <zone_name> [-c <cfg_pth>] [--log <log_level>] [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa-edit <soa_edit>] [--soa-ttl <soa_ttl>]
-    pypdns record add <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--reverse] [--disabled] [-c <cfg_pth>] [--log <log_level>]
+    pypdns record edit <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--reverse] [--disabled] [-c <cfg_pth>] [--log <log_level>]
     pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>] [-c <cfg_pth>] [--log <log_level>]
     pypdns (-h | --help)
     pypdns --version
@@ -84,7 +84,7 @@ def main():
                                          soa_ttl=options['--soa-ttl']))
 
     if options['record']:
-        if options['add']:
+        if options['edit']:
             pprint(pdns_api.record_add(options['<zone_name>'],
                                        options['<record_name>'],
                                        options['<content>'],
