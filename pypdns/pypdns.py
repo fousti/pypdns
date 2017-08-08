@@ -42,7 +42,7 @@ def parse_config(cfg, ext_config={}):
             config[ckey] = cvalue
 
     for k in ('endpoint', 'apikey'):
-        if k in ext_config and ext_config[k] is not None:
+        if ext_config.get(k) is not None:
             config[k] = ext_config[k]
 
     assert (config.get('endpoint') is not None and
