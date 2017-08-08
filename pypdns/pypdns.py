@@ -42,7 +42,7 @@ def parse_config(cfg, ext_config={}):
             config[ckey] = cvalue
 
     for k in ('endpoint', 'apikey'):
-        if k in ext_config and ext_config[k] is not None:
+        if ext_config.get(k) is not None:
             config[k] = ext_config[k]
 
     assert (config.get('endpoint') is not None and
@@ -52,6 +52,8 @@ def parse_config(cfg, ext_config={}):
 
 
 class PyPDNS(object):
+
+    _interactive = False
 
     def __init__(self, ext_config={}):
         cfg = load_config(ext_config.get('config_path'))
@@ -147,12 +149,15 @@ class PyPDNS(object):
             ]
         }
         ret, code = self.zones_api.create_zone(data)
-        return ret
+        return ret, code
 
     def record_add(self, zone_name, record_name, contents, comment, type_='A',
-                   changetype='REPLACE', ttl=3600, reverse=False, disabled=False):
+                   changetype='REPLACE', ttl=3600, reverse=False, disabled=False,
+                   override=False):
         """
-        Add or replace a record
+        Add or replace a record, Return 2-tuple : response body, response code
+        if record exists and override is set to False : return error message
+        and -1 error code.
 
         :param zone_name: Zone to add record to
         :type zone_name: String
@@ -177,22 +182,26 @@ class PyPDNS(object):
         name = (record_name + zone_name if type_ in ('A', 'AAAA', 'PTR')
                 else zone_name)
 
-        # record already exists ?
-        old_record = self.zones_get(zone_name, name=name)
+        if not override:
+            # record already exists ?
+            old_record = self.zones_get(zone_name, name=name)
 
-        if old_record:
-            valid = False
-            while not valid:
-                replace = raw_input('Warning, the record already exists with the '
-                                    'following data %s, replace it ? Y/n :' % old_record)
-                if replace.lower() not in ('y','n','yes','no'):
-                    continue
-                if replace.lower() in ('n', 'no'):
-                    log.info('Exiting with no changes on existing record')
-                    return
-                else:
-                    valid = True
-                    reverse = True
+            if old_record:
+                if not self._interactive:
+                    return ('Specify override to True for erasing existing record',
+                            -1)
+                valid = False
+                while not valid:
+                    replace = raw_input('Warning, the record already exists with the '
+                                        'following data %s, replace it ? Y/n :' % old_record)
+                    if replace.lower() not in ('y','n','yes','no'):
+                        continue
+                    if replace.lower() in ('n', 'no'):
+                        log.info('Exiting with no changes on existing record')
+                        return
+                    else:
+                        valid = True
+                        reverse = True
 
         if not name.endswith('.'):
             name += '.'
@@ -222,9 +231,7 @@ class PyPDNS(object):
             ]
         }
         ret, code = self.zones_api.update_records(zone_name, data)
-        if code == 204:
-            ret = 'Record created'
-        return ret
+        return ret, code
 
     def search(self, term, object_type=None, zone=None, rtype=None,
                max_results=None):

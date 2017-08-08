@@ -2,18 +2,18 @@
 pypdns
 
 Usage:
-    pypdns zones list [-c <cfg_pth>] [--log <log_level>] [--name <name>]
-    pypdns zones get <zone_name> [--log <log_level>] [-c <cfg_pth>] [--name <name>] [--type <type>]
-    pypdns zones create <zone_name> [-c <cfg_pth>] [--log <log_level>] [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa-edit <soa_edit>] [--soa-ttl <soa_ttl>]
-    pypdns record add <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--reverse] [--disabled] [-c <cfg_pth>] [--log <log_level>]
+    pypdns zones list [--name <name>] [-c <cfg_pth>] [--log <log_level>]
+    pypdns zones get <zone_name> [--name <name>] [--type <type>] [--log <log_level>] [-c <cfg_pth>]
+    pypdns zones create <zone_name> [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa-edit <soa_edit>] [--soa-ttl <soa_ttl>]
+    pypdns record edit <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--reverse] [--disabled] [--override] [-c <cfg_pth>] [--log <log_level>]
     pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>] [-c <cfg_pth>] [--log <log_level>]
     pypdns (-h | --help)
     pypdns --version
 
 Options:
-    -c <cfg_pth> --config=<cfg_pth>     Path of configuration file, if not provided default to: ./pypdns.ini, ~/.config/pypdns.ini
-    -h --help       Show this screen
-    --version       Show version
+    -c <cfg_pth> --config=<cfg_pth>  Path of configuration file, if not provided default to: ./pypdns.ini, ~/.config/pypdns.ini
+    -h --help                        Show this screen
+    --version                        Show version
     --endpoint <api_endpoint>        Override config file for pdns api endpoint
     --apikey <api_key>               Override config file for pdns api api key
     --log <log_level>                Set log level [default: ERROR]
@@ -27,7 +27,8 @@ Options:
     --rtype <type>                   Record's type
     --reverse                        Add reverse record for A and AAAA [default: False]
     --changetype <changetype>        Record update behaviour [default: REPLACE]
-    --disabled                       Disable record
+    --disabled                       Disable record [default: False]
+    --override                       Override existing record, if no, a confirmation will be ask on prompt [default: False]
     --ttl <ttl>                      Record's ttl [default: 3600]
     --otype <object_type>            Filter search result, one of : record or zone [default: record]
     --zone <zone>                    Filter search result on zone name (sets object_type to record)
@@ -63,6 +64,8 @@ def main():
     logger.addHandler(handler)
     logger.info('Start')
     pdns_api = PyPDNS(cfg)
+    # We are in CLI mode
+    pdns_api._interactive = True
 
     if 'zones' in options and options['zones']:
         if 'list' in options and options['list']:
@@ -84,7 +87,7 @@ def main():
                                          soa_ttl=options['--soa-ttl']))
 
     if options['record']:
-        if options['add']:
+        if options['edit']:
             pprint(pdns_api.record_add(options['<zone_name>'],
                                        options['<record_name>'],
                                        options['<content>'],
@@ -93,7 +96,8 @@ def main():
                                        changetype=options['--changetype'],
                                        ttl=int(options['--ttl']),
                                        reverse=options['--reverse'],
-                                       disabled=options['--disabled']))
+                                       disabled=options['--disabled'],
+                                       override=options['--override']))
     if options['search']:
         pprint(pdns_api.search(options['<term>'],
                                object_type=options['--otype'],
