@@ -1,3 +1,9 @@
+pypdns (0.10-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- Ismael Tifous <ismael.tifous@dailymotion.com>  Thu, 31 Aug 2017 17:36:31 +0200
+
 pypdns (0.9-1) unstable; urgency=medium
 
   * New upstream
