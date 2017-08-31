@@ -179,13 +179,14 @@ class PyPDNS(object):
         record_name = (record_name if record_name.endswith('.')
                        else record_name + '.')
 
+        type_ = type_.upper()
+
         name = (record_name + zone_name if type_ in ('A', 'AAAA', 'PTR')
                 else zone_name)
 
         if not override:
             # record already exists ?
-            old_record = self.zones_get(zone_name, name=name)
-
+            old_record = self.zones_get(zone_name, name=record_name)
             if old_record:
                 if not self._interactive:
                     return ('Specify override to True for erasing existing record',
