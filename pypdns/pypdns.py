@@ -181,7 +181,7 @@ class PyPDNS(object):
 
         type_ = type_.upper()
 
-        name = (record_name + zone_name if type_ in ('A', 'AAAA', 'PTR')
+        name = (record_name + zone_name if type_ in ('A', 'AAAA', 'PTR', 'CNAME')
                 else zone_name)
 
         if not override:
