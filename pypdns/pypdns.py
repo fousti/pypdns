@@ -171,7 +171,7 @@ class PyPDNS(object):
         :type changetype: String
         :param ttl: record's type, default to A
         :type ttl: int
-        :param reverse: For A or AAAA record, default is to automatically add reverse, set this to True if not wanted
+        :param reverse: For A or AAAA record, default is to False, set this to True for creating a reverse record
         :type reverse: bool
         :param disabled: Disable record, default to False
         :type disabled: bool
@@ -202,7 +202,6 @@ class PyPDNS(object):
                         return
                     else:
                         valid = True
-                        reverse = True
 
         if not name.endswith('.'):
             name += '.'
