@@ -181,27 +181,21 @@ class PyPDNS(object):
 
         type_ = type_.upper()
 
-        name = (record_name + zone_name if type_ in ('A', 'AAAA', 'PTR', 'CNAME')
+        name = (record_name + zone_name if (type_ not in ('SOA',) and
+                                            record_name != '.')
                 else zone_name)
 
         if not override:
             # record already exists ?
-            old_record = self.zones_get(zone_name, name=record_name)
-            if old_record:
+            existing_record = self._get_record(name, type_)
+            if existing_record:
                 if not self._interactive:
-                    return ('Specify override to True for erasing existing record',
+                    return ('Specify override=True for erasing existing record',
                             -1)
-                valid = False
-                while not valid:
-                    replace = raw_input('Warning, the record already exists with the '
-                                        'following data %s, replace it ? Y/n :' % old_record)
-                    if replace.lower() not in ('y','n','yes','no'):
-                        continue
-                    if replace.lower() in ('n', 'no'):
-                        log.info('Exiting with no changes on existing record')
-                        return
-                    else:
-                        valid = True
+                else:
+                    valid = self._validate_override(existing_record)
+                    if not valid:
+                        return False
 
         if not name.endswith('.'):
             name += '.'
@@ -263,3 +257,25 @@ class PyPDNS(object):
             filtered = [rec for rec in filtered if rec.get('type') == rtype]
 
         return filtered
+
+    def _get_record(self, name, rtype):
+        search = self.search(name)
+        return next((rr for rr in search if rr.get('name') == name + '.' and
+                                            rr.get('type') == rtype),
+                    None)
+
+    def _validate_override(self, record):
+        valid = False
+        while not valid:
+            replace = raw_input('Warning, the record already exists with the '
+                                'following data %s, replace it ? Y/n :'
+                                '' % record)
+            if replace.lower() not in ('y','n','yes','no'):
+                continue
+            if replace.lower() in ('n', 'no'):
+                log.info('Exiting with no changes on existing record')
+                valid = False
+                break
+            else:
+                valid = True
+        return valid
