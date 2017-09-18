@@ -35,9 +35,9 @@ Options:
     --max-results <max_results>      Limit search results
 """
 import logging
+import json
 
 from docopt import docopt
-from pprint import pprint
 
 from . import __version__ as VERSION
 from .pypdns import PyPDNS
@@ -69,38 +69,42 @@ def main():
 
     if 'zones' in options and options['zones']:
         if 'list' in options and options['list']:
-            pprint(pdns_api.zones_list(options['--name']))
+            print(json.dumps(pdns_api.zones_list(options['--name']), sort_keys=True, indent=4, separators=(',', ': ')))
 
         if 'get' in options and options['get']:
-            pprint(pdns_api.zones_get(options['<zone_name>'],
-                                      options['--name'], options['--type']))
+            print(json.dumps(pdns_api.zones_get(options['<zone_name>'],
+                                                options['--name'], options['--type']),
+                             sort_keys=True, indent=4, separators=(',', ': ')))
 
         if 'create' in options and options['create']:
             nameservers = options.get('--nameservers', [])
             nameservers = nameservers and nameservers.split(',')
 
-            pprint(pdns_api.zones_create(options['<zone_name>'],
+            print(json.dumps(pdns_api.zones_create(options['<zone_name>'],
                                          kind=options['--kind'],
                                          soa=options['--soa'],
                                          nameservers=nameservers,
                                          soa_edit=options['--soa-edit'],
-                                         soa_ttl=options['--soa-ttl']))
+                                         soa_ttl=options['--soa-ttl']),
+                             sort_keys=True, indent=4, separators=(',', ': ')))
 
     if options['record']:
         if options['edit']:
-            pprint(pdns_api.record_add(options['<zone_name>'],
-                                       options['<record_name>'],
-                                       options['<content>'],
-                                       options['<comment>'],
-                                       type_=options['--rtype'],
-                                       changetype=options['--changetype'],
-                                       ttl=int(options['--ttl']),
-                                       reverse=options['--reverse'],
-                                       disabled=options['--disabled'],
-                                       override=options['--override']))
+            print(json.dumps(pdns_api.record_add(options['<zone_name>'],
+                                                 options['<record_name>'],
+                                                 options['<content>'],
+                                                 options['<comment>'],
+                                                 type_=options['--rtype'],
+                                                 changetype=options['--changetype'],
+                                                 ttl=int(options['--ttl']),
+                                                 reverse=options['--reverse'],
+                                                 disabled=options['--disabled'],
+                                                 override=options['--override']),
+                             sort_keys=True, indent=4, separators=(',', ': ')))
     if options['search']:
-        pprint(pdns_api.search(options['<term>'],
+        print(json.dumps(pdns_api.search(options['<term>'],
                                object_type=options['--otype'],
                                zone=options['--zone'],
                                rtype=options['--rtype'],
-                               max_results=options['--max-results']))
+                               max_results=options['--max-results']),
+                         sort_keys=True, indent=4, separators=(',', ': ')))
