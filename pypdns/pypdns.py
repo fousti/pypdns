@@ -258,6 +258,25 @@ class PyPDNS(object):
 
         return filtered
 
+    def add(self, record_name, content, comment, rtype,ttl=3600, reverse=False,
+            override=False):
+        record, zone = self._construct_names(record_name)
+        if not zone:
+            log.info('Cannot find zone for record : %s', record_name)
+            return False
+
+        return self.record_add(zone, record, content, comment, type_=rtype,
+                               ttl=ttl, reverse=reverse, override=override)
+
+    def delete(self, record_name, comment, rtype, override=False):
+        record, zone = self._construct_names(record_name)
+        if not zone:
+            log.info('Cannot find zone for record : %s', record_name)
+            return False
+
+        return self.record_add(zone, record, '', comment, type_=rtype,
+                               override=override, changetype='DELETE')
+
     def _get_record(self, name, rtype):
         search = self.search(name)
         return next((rr for rr in search if rr.get('name') == name + '.' and
@@ -279,3 +298,26 @@ class PyPDNS(object):
             else:
                 valid = True
         return valid
+
+    def _zone_exists(self, zone):
+        resp = self.zones_get(zone)
+        if 'error' in resp:
+            res = None
+        else:
+            res = resp
+        return res
+
+    def _construct_names(self, name):
+        sub_names = name.split('.')
+        # Iterates on sub domains to find record name & zone, use api to find
+        # the first name matching a zone.
+        zone = []
+        record = []
+        for i in xrange(0, len(sub_names)):
+            sub_zone = '.'.join(sub_names[i:])
+            search = self._zone_exists(sub_zone)
+            if search:
+                zone = sub_names[i:]
+                record = [rr for rr in sub_names if rr not in sub_names[i:]]
+                break
+        return ('.'.join(record), '.'.join(zone))

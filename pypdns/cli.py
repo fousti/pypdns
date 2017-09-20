@@ -5,6 +5,8 @@ Usage:
     pypdns zones list [--name <name>] [-c <cfg_pth>] [--log <log_level>]
     pypdns zones get <zone_name> [--name <name>] [--type <type>] [--log <log_level>] [-c <cfg_pth>]
     pypdns zones create <zone_name> [--soa <soa>] [--kind <kind>] [--nameservers=<nameservers>] [--soa-edit <soa_edit>] [--soa-ttl <soa_ttl>]
+    pypdns record add <full_record_name> <content> <comment> <rtype> [--ttl <ttl>] [--reverse] [--disabled] [--override] [-c <cfg_pth>] [--log <log_level>]
+    pypdns record delete <full_record_name> <comment> <rtype> [--override] [-c <cfg_pth>] [--log <log_level>]
     pypdns record edit <zone_name> <record_name> <content> <comment> --rtype <type> [--changetype <changetype>] [--ttl <ttl>] [--reverse] [--disabled] [--override] [-c <cfg_pth>] [--log <log_level>]
     pypdns search <term> [--otype <object_type>] [--zone <zone>] [--rtype <type>] [--max-results <max_results>] [-c <cfg_pth>] [--log <log_level>]
     pypdns (-h | --help)
@@ -89,10 +91,23 @@ def main():
                              sort_keys=True, indent=4, separators=(',', ': ')))
 
     if options['record']:
+        if options['add']:
+            print(json.dumps(pdns_api.add(options['<full_record_name>'],
+                                          options['<content>'],
+                                          options['<comment>'],
+                                          options['<rtype>'],
+                                          ttl=int(options['--ttl']),
+                                          reverse=options['--reverse'],
+                                          override=options['--override'])))
+
+        if options['delete']:
+            print(json.dumps(pdns_api.delete(options['<full_record_name>'],
+                                             options['<comment>'],
+                                             options['<rtype>'],
+                                             options['--override'])))
         if options['edit']:
             print(json.dumps(pdns_api.record_add(options['<zone_name>'],
                                                  options['<record_name>'],
-                                                 options['<content>'],
                                                  options['<comment>'],
                                                  type_=options['--rtype'],
                                                  changetype=options['--changetype'],
@@ -103,8 +118,8 @@ def main():
                              sort_keys=True, indent=4, separators=(',', ': ')))
     if options['search']:
         print(json.dumps(pdns_api.search(options['<term>'],
-                               object_type=options['--otype'],
-                               zone=options['--zone'],
-                               rtype=options['--rtype'],
-                               max_results=options['--max-results']),
+                                         object_type=options['--otype'],
+                                         zone=options['--zone'],
+                                         rtype=options['--rtype'],
+                                         max_results=options['--max-results']),
                          sort_keys=True, indent=4, separators=(',', ': ')))
