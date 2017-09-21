@@ -1,3 +1,3 @@
 from pypdns import PyPDNS
 
-__version__ = '0.14'
+__version__ = '0.15'
