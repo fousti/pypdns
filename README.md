@@ -44,6 +44,10 @@ Note that for all operations : Delete, disabled , you can specify --override if 
 
 ##### Add record
 
+Short method:
+``` pypdns record add test.example.com 10.0.0.0 'Add record test' A --reverse```
+
+Long method:
 ```pypdns  record edit example.com test 10.190.26.57 'Add record test' --rtype A --reverse```
 
 Use --reverse to automatically add a PTR record for the newly created record. Warning ! if a previous PTR record exists it will be replaced by the new one.
@@ -59,13 +63,21 @@ This command disabled the given record , returning NXDOMAIN on resolve. But the 
 
 ##### Delete record
 
+Short method
+``` pypdns record delete test.example.com 10.190.26.57 'Delete test record' A --override```
+
+Long method:
 ```pypdns  record edit example.com test 10.190.26.57 'Delete record test' --rtype A --changetype DELETE --override```
 
 Note that the PTR record ( if it exists ) will be not delete even if you specify --reverse (smile)
 
 ##### Delete PTR record
 
-```pypdns  record edit 190.10.in-addr.arpa. 57.26 test.example.com 'Delete test record' --rtype PTR --changetype DELETE --override```
+Short method:
+``` pypdns record delete 57.26.190.in-addr.arpa. 'Delete reverse test record' PTR --override```
+
+Long method:
+```pypdns  record edit 190.10.in-addr.arpa. 57.26 test.example.com 'Delete reverse test record' --rtype PTR --changetype DELETE --override```
 
 #### Read
 
