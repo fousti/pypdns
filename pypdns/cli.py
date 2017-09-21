@@ -108,6 +108,7 @@ def main():
         if options['edit']:
             print(json.dumps(pdns_api.record_add(options['<zone_name>'],
                                                  options['<record_name>'],
+                                                 options['<content>'],
                                                  options['<comment>'],
                                                  type_=options['--rtype'],
                                                  changetype=options['--changetype'],
