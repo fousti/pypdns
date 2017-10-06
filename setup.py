@@ -8,7 +8,9 @@ config = {
     'author_email': 'ismael.tifous@gmail.com',
     'version': '0.9',
     'install_requires': ['docopt',
-                         'requests'],
+                         'requests',
+                         'six',
+                         'future'],
     'extras_require': {
         'test': ['nose'],
     },

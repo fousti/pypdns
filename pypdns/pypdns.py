@@ -2,8 +2,9 @@ import os
 import re
 import logging
 import datetime
-
-import ConfigParser
+from six.moves import configparser as ConfigParser
+from six import iteritems
+from builtins import range, input
 
 from . import api
 
@@ -37,7 +38,7 @@ def parse_config(cfg, ext_config={}):
     for option in options:
         config[option] = cfg.get('pypdns', option)
 
-    for ckey, cvalue in DEFAULT_CONFIG.iteritems():
+    for ckey, cvalue in iteritems(DEFAULT_CONFIG):
         if ckey not in config:
             config[ckey] = cvalue
 
@@ -105,7 +106,7 @@ class PyPDNS(object):
 
         for record_set in ret['rrsets']:
             match = True
-            for key, pattern in patterns.iteritems():
+            for key, pattern in iteritems(patterns):
                 match &= bool(pattern.match(record_set[key]))
 
             for comment in record_set.get('comments', []):
@@ -278,17 +279,22 @@ class PyPDNS(object):
                                override=override, changetype='DELETE')
 
     def _get_record(self, name, rtype):
-        search = self.search(name)
-        return next((rr for rr in search if rr.get('name') == name + '.' and
+        if name.endswith('.'):
+            sname = name[:-1]
+        else:
+            sname = name
+            name += '.'
+        search = self.search(sname)
+        return next((rr for rr in search if rr.get('name') == name and
                                             rr.get('type') == rtype),
                     None)
 
     def _validate_override(self, record):
         valid = False
         while not valid:
-            replace = raw_input('Warning, the record already exists with the '
-                                'following data %s, replace it ? Y/n :'
-                                '' % record)
+            replace = input('Warning, the record already exists with the '
+                            'following data %s, replace it ? Y/n :'
+                            '' % record)
             if replace.lower() not in ('y','n','yes','no'):
                 continue
             if replace.lower() in ('n', 'no'):
@@ -313,7 +319,7 @@ class PyPDNS(object):
         # the first name matching a zone.
         zone = []
         record = []
-        for i in xrange(0, len(sub_names)):
+        for i in range(0, len(sub_names)):
             sub_zone = '.'.join(sub_names[i:])
             search = self._zone_exists(sub_zone)
             if search:
