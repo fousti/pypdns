@@ -8,7 +8,7 @@ Standards-Version: 3.9.1
 
 Package: python-pypdns
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-requests, python-docopt
+Depends: ${misc:Depends}, ${python:Depends}, ${python3:Depends}, python-docopt, python-requests, python-six, python-future
 Description: PowerDNS API python wrapper, library & cli
 
 
