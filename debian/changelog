@@ -1,3 +1,10 @@
+pypdns (0.16-3) unstable; urgency=medium
+
+  * New upstream release
+  * Add support for python3 packaging
+
+ -- Ismael Tifous <ismael.tifous@dailymotion.com>  Fri, 06 Oct 2017 16:53:51 +0200
+
 pypdns (0.15-2) unstable; urgency=medium
 
   * New upstream release
