@@ -1,3 +1,10 @@
+pypdns (0.17-4) unstable; urgency=medium
+
+  * New upstream release
+  * Fix broken python3 packaging
+
+ -- Ismael Tifous <ismael.tifous@dailymotion.com>  Mon, 09 Oct 2017 15:59:31 +0200
+
 pypdns (0.16-3) unstable; urgency=medium
 
   * New upstream release
