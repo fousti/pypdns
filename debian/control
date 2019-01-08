@@ -2,15 +2,23 @@ Source: pypdns
 Maintainer: Ismael Tifous <ismael.tifous@gmail.com>
 Section: python
 Priority: optional
-Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3), debhelper (>= 7.4.3)
+Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3), debhelper (>= 7.4.3), python3-all, python3-setuptools, dh-python
 Standards-Version: 3.9.1
+X-Python-Version: >= 2.7
+X-Python3-Version: >= 3.2
+XS-Python-Version: >= 2.7
+XS-Python3-Version: >= 3.2
 
 
 Package: python-pypdns
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, ${python3:Depends}, python-docopt, python-requests, python-six, python-future
+Depends: ${python:Depends}, ${misc:Depends}, python-docopt, python-requests, python-six, python-future
 Description: PowerDNS API python wrapper, library & cli
 
+Package: python3-pypdns
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends},  python3-six, python3-future, python3-docopt, python3-requests
+Description: PowerDNS API python wrapper, library & cli
 
 
 
